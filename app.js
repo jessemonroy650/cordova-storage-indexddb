@@ -17,6 +17,9 @@ var app = {
         result.onsuccess = function (event) {
             app.db = event.target.result;
             $('#opendbResult').html('indexedDB.test created');
+            console.log("name:" + app.db.name);
+            console.log("version:" + app.db.version);
+            console.log("objectStoreNames:" +  JSON.stringify(app.db.objectStoreNames));
         };
         result.onerror = function (event) {
             $('#opendbResult').addClass('red');
@@ -50,12 +53,19 @@ var app = {
                 $('#opendbResult').html('indexedDB.test and objectStore created');
             }
             console.log('indexedDB.test onupgradeneeded.');
+            console.log("name:" + thisDB.name);
+            console.log("keyPath:" + thisDB.keyPath);
+            console.log("indexNames:" + thisDB.indexNames);
+            console.log("autoIncrement:" + thisDB.autoIncrement);
         };
 
         result.onsuccess = function (event) {
             app.db = event.target.result;
             //$('#opendbResult').html('indexedDB.test open, after first time.');
             console.log('indexedDB.test onsuccess.');
+            console.log("name:" + app.db.name);
+            console.log("version:" + app.db.version);
+            console.log("objectStoreNames:" +  JSON.stringify(app.db.objectStoreNames));
         };
         result.onerror = function (event) {
             $('#opendbResult').addClass('red');
@@ -65,11 +75,18 @@ var app = {
     // create data
     test5 : function () {
         console.log("app.test5");
-        var person = $('#data').val();
+        //if ( app.db !== {} ) { alert("app.db does not exist."); return; }
+        var the_name = $('#name').val();
+        var the_email = $('#email').val();
         var transaction = app.db.transaction(["people"],"readwrite");
         var store       = transaction.objectStore("people");
+        console.log("name:" + store.name);
+        console.log("keyPath:" + store.keyPath);
+        console.log("indexNames:" + JSON.stringify(store.indexNames));
+        console.log("autoIncrement:" + store.autoIncrement);
+
         //Perform the add
-        var request = store.add({name:person});
+        var request = store.add({name:the_name,email:the_email});
  
         request.onerror = function(e) {
             console.log("Error",e.target.error.name);
@@ -87,9 +104,9 @@ var app = {
         console.log("app.test6");
         var transaction = app.db.transaction(["people"],"readonly");
         var store       = transaction.objectStore("people");
-        //var store       = transaction.index("index");
+
         //Perform the add
-        var request = store.get("1");
+        var request = store.get(2);
  
         request.onerror = function(e) {
             console.log("Error",e.target.error.name);
@@ -97,13 +114,9 @@ var app = {
         }
  
         request.onsuccess = function(e) {
-            console.log(JSON.stringify(e));
             var result = e.target.result;
-            console.log(JSON.stringify(request));
-            console.log(JSON.stringify(result));
-            console.log("Woot! Did it");
-            $('#dataObject').val(result);
-            //$('#opendbResult').html("Woot! Did it" + result);
+            console.log("Woot! Did it:" + JSON.stringify(result));
+            $('#dataObject').html("test" + JSON.stringify(result));
         }
     },
 
